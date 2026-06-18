@@ -25,33 +25,60 @@ export default function AppLayout() {
   useEffect(() => {
     const token = localStorage.getItem('token')
     if (!token) return
-    const wsBase = import.meta.env.VITE_WS_URL || `ws://${window.location.host}`
-    const wsUrl = `${wsBase}/ws?token=${token}`
-    const ws = new WebSocket(wsUrl)
 
-    ws.onmessage = (e) => {
-      try {
-        const msg = JSON.parse(e.data)
-        if (msg.type === 'sale_created')
-          setWsMessage(`Nueva venta #${msg.sale?.sale_number} — ${Number(msg.sale?.total).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}`)
-        if (msg.type === 'product_stock_changed')
-          setWsMessage(`Producto "${msg.product?.name}" ${msg.product?.is_out_of_stock ? 'marcado sin stock' : 'con stock disponible'}`)
-        if (msg.type === 'pending_order_created') {
-          dispatch(fetchPendingOrders())
-          const isPending = msg.order?.status === 'PENDING_PAYMENT'
-          const label = isPending ? 'Pedido de tienda — pago pendiente' : 'Pedido en espera'
-          setWsMessage(`${label}: #${msg.order?.order_number} de ${msg.order?.customer_name} — ${Number(msg.order?.total).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}`)
-        }
-        if (msg.type === 'pending_order_updated')
-          dispatch(wsOrderUpdated(msg.order))
-        if (msg.type === 'pending_order_deleted')
-          dispatch(wsOrderDeleted(msg.order?.id))
-      } catch {}
+    let ws = null
+    let pingInterval = null
+    let reconnectTimeout = null
+    let active = true
+
+    const connect = () => {
+      if (!active) return
+      const wsBase = import.meta.env.VITE_WS_URL || `ws://${window.location.host}`
+      ws = new WebSocket(`${wsBase}/ws?token=${token}`)
+
+      ws.onopen = () => {
+        pingInterval = setInterval(() => {
+          if (ws.readyState === WebSocket.OPEN) ws.send('ping')
+        }, 30000)
+      }
+
+      ws.onmessage = (e) => {
+        try {
+          const msg = JSON.parse(e.data)
+          if (msg.type === 'sale_created')
+            setWsMessage(`Nueva venta #${msg.sale?.sale_number} — ${Number(msg.sale?.total).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}`)
+          if (msg.type === 'product_stock_changed')
+            setWsMessage(`Producto "${msg.product?.name}" ${msg.product?.is_out_of_stock ? 'marcado sin stock' : 'con stock disponible'}`)
+          if (msg.type === 'pending_order_created') {
+            dispatch(fetchPendingOrders())
+            const isPending = msg.order?.status === 'PENDING_PAYMENT'
+            const label = isPending ? 'Pedido de tienda — pago pendiente' : 'Pedido en espera'
+            setWsMessage(`${label}: #${msg.order?.order_number} de ${msg.order?.customer_name} — ${Number(msg.order?.total).toLocaleString('es-CL', { style: 'currency', currency: 'CLP' })}`)
+          }
+          if (msg.type === 'pending_order_updated')
+            dispatch(wsOrderUpdated(msg.order))
+          if (msg.type === 'pending_order_deleted')
+            dispatch(wsOrderDeleted(msg.order?.id))
+        } catch {}
+      }
+
+      ws.onclose = () => {
+        clearInterval(pingInterval)
+        if (active) reconnectTimeout = setTimeout(connect, 4000)
+      }
+
+      ws.onerror = () => ws.close()
     }
 
-    const ping = setInterval(() => { if (ws.readyState === WebSocket.OPEN) ws.send('ping') }, 30000)
+    connect()
 
-    return () => { clearInterval(ping); ws.close() }
+    return () => {
+      active = false
+      clearTimeout(reconnectTimeout)
+      clearInterval(pingInterval)
+      if (ws && ws.readyState !== WebSocket.CONNECTING) ws.close()
+      else if (ws) ws.onopen = () => ws.close()
+    }
   }, [])
 
   return (
