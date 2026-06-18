@@ -103,7 +103,7 @@ export default function ProductsPage() {
   const loadCategories = async () => {
     try {
       const { data } = await getCategoriesApi()
-      setCategories(data)
+      setCategories(Array.isArray(data) ? data : [])
     } catch (e) {
       console.error(e)
     }
@@ -189,7 +189,7 @@ export default function ProductsPage() {
     setSubcatLoading(true)
     try {
       const { data } = await getProductSubcategoriesApi(product.id)
-      setSubcategories(data)
+      setSubcategories(Array.isArray(data) ? data.map(s => ({ ...s, items: Array.isArray(s.items) ? s.items : [] })) : [])
     } catch {
       setSubcatError('Error al cargar grupos')
     }
@@ -727,10 +727,10 @@ export default function ProductsPage() {
 
                   {/* Items list */}
                   <Box sx={{ px: 2, py: 1 }}>
-                    {sub.items.length === 0 && (
+                    {(sub.items || []).length === 0 && (
                       <Typography variant="caption" color="text.secondary">Sin ítems aún</Typography>
                     )}
-                    {sub.items.map(item => (
+                    {(sub.items || []).map(item => (
                       <Box key={item.id} sx={{ display: 'flex', alignItems: 'center', py: 0.5, borderBottom: '1px solid', borderColor: 'grey.100' }}>
                         <Typography variant="body2" sx={{ flex: 1 }}>{item.name}</Typography>
                         <Typography variant="body2" color="primary.main" fontWeight={600} sx={{ mr: 1 }}>
