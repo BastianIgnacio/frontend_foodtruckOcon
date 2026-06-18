@@ -11,7 +11,7 @@ export default function pendingOrdersReducer(state = initial, action) {
     case FETCH_PENDING_ORDERS:
       return { ...state, loading: true, error: null }
     case FETCH_PENDING_ORDERS_SUCCESS:
-      return { ...state, loading: false, list: action.payload }
+      return { ...state, loading: false, list: Array.isArray(action.payload) ? action.payload : [] }
     case FETCH_PENDING_ORDERS_FAILURE:
       return { ...state, loading: false, error: action.payload }
 

@@ -11,7 +11,7 @@ export default function productsReducer(state = initial, action) {
     case FETCH_PRODUCTS:
       return { ...state, loading: true, error: null }
     case FETCH_PRODUCTS_SUCCESS:
-      return { ...state, loading: false, list: action.payload }
+      return { ...state, loading: false, list: Array.isArray(action.payload) ? action.payload : [] }
     case FETCH_PRODUCTS_FAILURE:
     case PRODUCT_OPERATION_FAIL:
       return { ...state, loading: false, error: action.payload }

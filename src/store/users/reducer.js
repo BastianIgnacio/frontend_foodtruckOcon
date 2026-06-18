@@ -10,7 +10,7 @@ export default function usersReducer(state = initial, action) {
     case FETCH_USERS:
       return { ...state, loading: true, error: null }
     case FETCH_USERS_SUCCESS:
-      return { ...state, loading: false, list: action.payload }
+      return { ...state, loading: false, list: Array.isArray(action.payload) ? action.payload : [] }
     case FETCH_USERS_FAILURE:
     case USER_OP_FAIL:
       return { ...state, loading: false, error: action.payload }

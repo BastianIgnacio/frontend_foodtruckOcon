@@ -11,7 +11,7 @@ export default function tasksReducer(state = initial, action) {
     case FETCH_TASKS:
       return { ...state, loading: true, error: null }
     case FETCH_TASKS_SUCCESS:
-      return { ...state, loading: false, list: action.payload }
+      return { ...state, loading: false, list: Array.isArray(action.payload) ? action.payload : [] }
     case FETCH_TASKS_FAILURE:
     case TASK_OP_FAIL:
       return { ...state, loading: false, error: action.payload }

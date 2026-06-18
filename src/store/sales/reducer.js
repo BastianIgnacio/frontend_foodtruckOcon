@@ -11,7 +11,7 @@ export default function salesReducer(state = initial, action) {
     case FETCH_SALES:
       return { ...state, loading: true, error: null }
     case FETCH_SALES_SUCCESS:
-      return { ...state, loading: false, list: action.payload.list, total: action.payload.total }
+      return { ...state, loading: false, list: Array.isArray(action.payload.list) ? action.payload.list : [], total: action.payload.total || 0 }
     case FETCH_SALES_FAILURE:
       return { ...state, loading: false, error: action.payload }
     case CREATE_SALE:

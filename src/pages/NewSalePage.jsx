@@ -95,7 +95,7 @@ export default function NewSalePage() {
     const extraTotal = allSelected.reduce((sum, i) => sum + i.extra_price, 0)
     const selectedIds = allSelected.map(i => i.id).sort((a, b) => a - b)
     const cartKey = `${subcatDialog.id}_s${selectedIds.join('-')}`
-    const nameParts = subcatDialog.subcategories
+    const nameParts = (subcatDialog.subcategories || [])
       .filter(s => (subSelections[s.id] || []).length > 0)
       .map(s => (subSelections[s.id] || []).map(i => i.name).join(', '))
     const displayName = nameParts.length > 0

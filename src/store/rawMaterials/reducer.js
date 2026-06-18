@@ -11,7 +11,7 @@ export default function rawMaterialsReducer(state = initial, action) {
     case FETCH_RAW_MATERIALS:
       return { ...state, loading: true, error: null }
     case FETCH_RAW_MATERIALS_SUCCESS:
-      return { ...state, loading: false, list: action.payload }
+      return { ...state, loading: false, list: Array.isArray(action.payload) ? action.payload : [] }
     case FETCH_RAW_MATERIALS_FAILURE:
     case RAW_MATERIAL_OP_FAIL:
       return { ...state, loading: false, error: action.payload }

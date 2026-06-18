@@ -361,7 +361,7 @@ export default function TiendaPage() {
                       </Box>
                       {hasSubcats && (
                         <Typography variant="caption" color="info.main" sx={{ fontSize: 11 }}>
-                          {product.subcategories.filter(s => s.items?.length > 0).length} grupo{product.subcategories.filter(s => s.items?.length > 0).length !== 1 ? 's' : ''} de opciones
+                          {(product.subcategories || []).filter(s => s.items?.length > 0).length} grupo{(product.subcategories || []).filter(s => s.items?.length > 0).length !== 1 ? 's' : ''} de opciones
                         </Typography>
                       )}
                     </CardContent>
