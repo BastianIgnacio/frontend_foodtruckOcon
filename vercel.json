@@ -1,0 +1,12 @@
+{
+  "rewrites": [
+    {
+      "source": "/api/:path*",
+      "destination": "https://TU-BACKEND.railway.app/api/:path*"
+    },
+    {
+      "source": "/static/:path*",
+      "destination": "https://TU-BACKEND.railway.app/static/:path*"
+    }
+  ]
+}
