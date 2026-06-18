@@ -79,7 +79,7 @@ export const createSaleApi = data => api.post('/sales/', data)
 export const cancelSaleApi = id => api.patch(`/sales/${id}/cancel`)
 
 // Pending Orders (tienda)
-export const createPendingOrderApi = data => axios.post('/api/pending-orders/', data)
+export const createPendingOrderApi = data => api.post('/pending-orders/', data)
 export const getPendingOrdersApi = (params) => api.get('/pending-orders/', { params })
 export const updatePendingOrderStatusApi = (id, data) => api.patch(`/pending-orders/${id}/status`, data)
 export const processPendingOrderPaymentApi = (id, data) => api.post(`/pending-orders/${id}/process-payment`, data)
