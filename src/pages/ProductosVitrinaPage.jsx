@@ -20,7 +20,7 @@ export default function ProductosVitrinaPage() {
 
   useEffect(() => {
     axios.get('/api/products/public', { params: { carousel_only: true } })
-      .then(r => { setProducts(r.data); setLoaded(true) })
+      .then(r => { setProducts(Array.isArray(r.data) ? r.data : []); setLoaded(true) })
       .catch(() => setLoaded(true))
   }, [])
 

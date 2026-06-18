@@ -50,7 +50,7 @@ export default function TiendaPage() {
 
   useEffect(() => {
     axios.get('/api/products/public')
-      .then(r => setProducts(r.data))
+      .then(r => setProducts(Array.isArray(r.data) ? r.data : []))
       .catch(() => setProducts([]))
       .finally(() => setLoading(false))
   }, [])
